@@ -1,21 +1,30 @@
 package Model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Ejercito extends Thread {
 
-    private ArrayList<Soldado> listaSoldados = new ArrayList<Soldado>();
-    private String bando;
-    private int idejercito;
-    static int nextid = 0;
-    private double bonifataque;
-    private double bonifdefensa;
-    private CampoBatalla campo;
+    private static final Logger logger = LoggerFactory.getLogger(Ejercito.class);
+    private static final AtomicInteger nextId = new AtomicInteger(0);
+
+    private final List<Soldado> listaSoldados = Collections.synchronizedList(new ArrayList<>());
+    private final String bando;
+    private final int idejercito;
+    private volatile double bonifataque;
+    private volatile double bonifdefensa;
+    private volatile CampoBatalla campo;
 
     public Ejercito(String bando) {
-        this.setBando(bando);
-        this.setIdejercito(nextid++);
+        this.bando = bando;
+        this.idejercito = nextId.getAndIncrement();
         if (getBando().equals("USSR")) {
             this.setBonifataque(0.95);
             this.setBonifdefensa(1.95);
@@ -63,19 +72,27 @@ public class Ejercito extends Thread {
     }
 
     public Soldado randomSoldado() {
-        Random r = new Random();
-        Soldado s = this.getListaSoldados().get(r.nextInt(this.getListaSoldados().size()));
-        return s;
+        synchronized (listaSoldados) {
+            if (listaSoldados.isEmpty()) {
+                return null;
+            }
+            int randomIndex = ThreadLocalRandom.current().nextInt(listaSoldados.size());
+            return listaSoldados.get(randomIndex);
+        }
     }
 
+    @Override
     public void run() {
+        logger.info("Army {} starting battle with {} soldiers", bando, cantidadSoldados());
         try {
-            while (!campo.isGanador()) {
+            while (!campo.isGanador() && !Thread.currentThread().isInterrupted()) {
                 campo.combate(this.getBando());
-                sleep(1000);
+                Thread.sleep(1000);
             }
+            logger.info("Army {} finished battle with {} soldiers remaining", bando, cantidadSoldados());
         } catch (InterruptedException e) {
-            e.getStackTrace();
+            logger.warn("Army {} battle interrupted", bando);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -83,16 +100,15 @@ public class Ejercito extends Thread {
         return bando;
     }
 
-    public void setBando(String bando) {
-        this.bando = bando;
+    public List<Soldado> getListaSoldados() {
+        return new ArrayList<>(listaSoldados);
     }
 
-    public ArrayList<Soldado> getListaSoldados() {
-        return listaSoldados;
-    }
-
-    public void setListaSoldados(ArrayList<Soldado> listaSoldados) {
-        this.listaSoldados = listaSoldados;
+    public void setListaSoldados(List<Soldado> soldados) {
+        synchronized (listaSoldados) {
+            this.listaSoldados.clear();
+            this.listaSoldados.addAll(soldados);
+        }
     }
 
     public double getBonifataque() {
