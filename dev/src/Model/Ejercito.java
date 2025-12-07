@@ -188,10 +188,6 @@ public class Ejercito extends Thread {
         return idejercito;
     }
 
-    public void setIdejercito(int idejercito) {
-        this.idejercito = idejercito;
-    }
-
     public void agregarTanque() {
         Soldado objS = new Soldado();
         objS.subirseAlTanque();

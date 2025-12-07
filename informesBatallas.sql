@@ -142,23 +142,3 @@ SELECT
 FROM ejercitos e
 LEFT JOIN batallas b ON e.id = b.ejercito_ganador_id OR e.id = b.ejercito_perdedor_id
 GROUP BY e.id, e.nombre;
-
--- =====================================================
--- Sample queries (commented out)
--- =====================================================
-
--- Ver todos los informes de batallas:
--- SELECT * FROM informes ORDER BY fecha_creacion DESC;
-
--- Ver resumen de batallas:
--- SELECT * FROM vista_resumen_batallas;
-
--- Ver estadisticas por ejercito:
--- SELECT * FROM vista_estadisticas_ejercitos;
-
--- Ver soldados de una batalla especifica:
--- SELECT sb.*, tu.nombre as tipo_unidad, e.nombre as ejercito
--- FROM soldados_batalla sb
--- JOIN tipos_unidad tu ON sb.tipo_unidad_id = tu.id
--- JOIN ejercitos e ON sb.ejercito_id = e.id
--- WHERE sb.batalla_id = 1;

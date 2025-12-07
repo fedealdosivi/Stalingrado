@@ -64,7 +64,7 @@ public class CampoBatalla extends Observable {
             Dao acceso = new Dao();
             InformeBatalla i=new InformeBatalla();
             i.setResultadoFinal(mensaje);
-            acceso.agregarInforme(i);
+            acceso.agregarBatalla(i);
         }
         return termino;
     }

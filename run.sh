@@ -30,8 +30,8 @@ fi
 
 # Check Java version
 JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print $1}')
-if [ "$JAVA_VERSION" -lt 17 ]; then
-    echo "ERROR: Java 17 or higher is required"
+if [ "$JAVA_VERSION" -lt 1 ]; then
+    echo "ERROR: Java 8 or higher is required"
     echo "Current version: $(java -version 2>&1 | head -n 1)"
     exit 1
 fi
