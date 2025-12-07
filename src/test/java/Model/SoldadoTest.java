@@ -31,14 +31,14 @@ class SoldadoTest {
     void testSoldadoWithAircraft() {
         soldado.subirseAlAvion();
         assertEquals(50, soldado.attack(), "Aircraft should have attack power of 50");
-        assertEquals(10, soldado.defence(), "Fleeing should have defense of 10");
+        assertEquals(30, soldado.defence(), "Default vest should have defense of 30");
     }
 
     @Test
     void testSoldadoWithCannon() {
         soldado.usarCañon();
         assertEquals(25, soldado.attack(), "Cannon should have attack power of 25");
-        assertEquals(50, soldado.defence(), "Trench should have defense of 50");
+        assertEquals(30, soldado.defence(), "Default vest should have defense of 30");
     }
 
     @Test
