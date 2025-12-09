@@ -41,46 +41,90 @@ public class Main {
                     break;
 
                 case 2:
-                    controladora.cambiarBonificacionAtaque(controladora.preguntarBando(), controladora.preguntarBonif());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.cambiarBonificacionAtaque(controladora.preguntarBando(), controladora.preguntarBonif());
+                    }
                     break;
 
                 case 3:
-                    controladora.cambiarBonificacionDefensa(controladora.preguntarBando(), controladora.preguntarBonif());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.cambiarBonificacionDefensa(controladora.preguntarBando(), controladora.preguntarBonif());
+                    }
                     break;
 
                 case 4:
-                    controladora.printearSoldados(controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.printearSoldados(controladora.preguntarBando());
+                    }
                     break;
                 case 5:
-                    controladora.agregarAviones(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.agregarAviones(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    }
                     break;
 
                 case 6:
-                    controladora.agregarTanques(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.agregarTanques(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    }
                     break;
 
                 case 7:
-                    controladora.agregarCañoneros(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.agregarCañoneros(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    }
                     break;
 
                 case 8:
-                    controladora.agregarFusileros(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.agregarFusileros(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    }
                     break;
 
                 case 9:
-                    controladora.agregarTrincheros(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.agregarTrincheros(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    }
                     break;
 
                 case 10:
-                    controladora.agregarCobardes(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.agregarCobardes(controladora.preguntarCantidad(), controladora.preguntarBando());
+                    }
                     break;
 
                 case 11:
-                    controladora.combatir();
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.combatir();
+                    }
                     break;
 
                 case 12:
-                    controladora.printearLista();
+                    if (controladora == null) {
+                        System.out.println("Error: Primero debe inicializar los ejercitos (opcion 1)");
+                    } else {
+                        controladora.printearLista();
+                    }
                     break;
 
                 case 13:

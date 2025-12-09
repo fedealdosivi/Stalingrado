@@ -53,7 +53,7 @@ public class ControlBatalla implements Observer {
     public String preguntarBando() {
         System.out.println("Ingrese el bando URSS o AXIS");
         String b = teclado.next();
-        return b;
+        return b.toUpperCase();
     }
 
     public double preguntarBonif() {

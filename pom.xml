@@ -15,15 +15,28 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <mysql.version>8.0.33</mysql.version>
         <junit.version>5.10.1</junit.version>
-        <logback.version>1.3.14</logback.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.4.14</logback.version>
+        <slf4j.version>2.0.9</slf4j.version>
+        <javafx.version>21.0.1</javafx.version>
     </properties>
 
     <dependencies>
+        <!-- JavaFX (ARM64 compatible) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
         <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -87,8 +100,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -108,7 +121,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>View.Main</mainClass>
+                            <mainClass>View.BattleSimulatorUI</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
@@ -124,7 +137,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>View.Main</mainClass>
+                            <mainClass>View.BattleSimulatorUI</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -148,7 +161,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <mainClass>View.Main</mainClass>
+                    <mainClass>View.BattleSimulatorUI</mainClass>
                 </configuration>
             </plugin>
         </plugins>
