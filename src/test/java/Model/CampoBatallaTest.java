@@ -77,11 +77,11 @@ class CampoBatallaTest {
     void testAddObserver() {
         final boolean[] notified = {false};
         Observer observer = (o, arg) -> notified[0] = true;
-        
+
         campoBatalla.agregarObservador(observer);
-        campoBatalla.setChanged();
-        campoBatalla.notifyObservers("Test message");
-        
+        // Trigger observer via todaviaHaySoldados (which calls setChanged internally)
+        campoBatalla.todaviaHaySoldados();
+
         assertTrue(notified[0], "Observer should be notified");
     }
 }
