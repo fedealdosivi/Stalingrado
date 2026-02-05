@@ -6,6 +6,9 @@
 
 set -e
 
+# Set Java 17 (required for JavaFX)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
 echo "=========================================="
 echo "Stalingrado Battle Simulator - GUI Mode"
 echo "Version 2.0.0 (2025)"

@@ -1,5 +1,7 @@
 # Stalingrado Battle Simulator
 
+![TPStalingrado](TPStalingrado.jpeg)
+
 A turn-based battle simulation system modeling the Battle of Stalingrad between AXIS and USSR forces. This educational project demonstrates object-oriented programming principles, design patterns, multi-threading, and database integration in Java.
 
 ## Table of Contents
