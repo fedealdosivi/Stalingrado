@@ -39,6 +39,15 @@ createApp({
         // Battle history
         const battleHistory = ref([]);
 
+        // Battle animation state
+        const currentBattle = ref({
+            active: false,
+            axisColor: '#4CAF50',
+            urssColor: '#4CAF50',
+            winner: null,
+            showResult: false
+        });
+
         // Computed
         const canStartBattle = computed(() => {
             return initialized.value && 
@@ -120,6 +129,16 @@ createApp({
                 case 'battleStarted':
                     battleInProgress.value = true;
                     battleEnded.value = false;
+                    // Initialize battle arena with first soldiers from each army
+                    const startAxisType = axisSoldiers.value.length > 0 ? axisSoldiers.value[0] : 'fusilero';
+                    const startUrssType = urssSoldiers.value.length > 0 ? urssSoldiers.value[0] : 'fusilero';
+                    currentBattle.value = {
+                        active: true,
+                        axisColor: soldierTypes[startAxisType]?.color || '#4CAF50',
+                        urssColor: soldierTypes[startUrssType]?.color || '#4CAF50',
+                        winner: null,
+                        showResult: false
+                    };
                     combatLog.value.push('=== BATTLE STARTED ===');
                     scrollToBottom();
                     break;
@@ -132,6 +151,41 @@ createApp({
                         if (match) {
                             const newAxisCount = parseInt(match[1]);
                             const newUrssCount = parseInt(match[2]);
+
+                            // Determine who lost a soldier and trigger animation
+                            const axisLost = axisSoldiers.value.length > newAxisCount;
+                            const urssLost = urssSoldiers.value.length > newUrssCount;
+
+                            if (axisLost || urssLost) {
+                                // Get colors for the fighting soldiers (the ones about to be removed)
+                                const fightAxisType = axisSoldiers.value.length > 0 ? axisSoldiers.value[axisSoldiers.value.length - 1] : 'fusilero';
+                                const fightUrssType = urssSoldiers.value.length > 0 ? urssSoldiers.value[urssSoldiers.value.length - 1] : 'fusilero';
+
+                                // Show the fight result
+                                currentBattle.value = {
+                                    active: true,
+                                    axisColor: soldierTypes[fightAxisType]?.color || '#4CAF50',
+                                    urssColor: soldierTypes[fightUrssType]?.color || '#4CAF50',
+                                    winner: axisLost ? 'URSS' : 'AXIS',
+                                    showResult: true
+                                };
+
+                                // After animation, go back to fighting state with next soldiers
+                                setTimeout(() => {
+                                    if (battleInProgress.value && newAxisCount > 0 && newUrssCount > 0) {
+                                        const nextAxisType = axisSoldiers.value.length > 1 ? axisSoldiers.value[axisSoldiers.value.length - 2] : 'fusilero';
+                                        const nextUrssType = urssSoldiers.value.length > 1 ? urssSoldiers.value[urssSoldiers.value.length - 2] : 'fusilero';
+                                        currentBattle.value = {
+                                            active: true,
+                                            axisColor: soldierTypes[nextAxisType]?.color || '#4CAF50',
+                                            urssColor: soldierTypes[nextUrssType]?.color || '#4CAF50',
+                                            winner: null,
+                                            showResult: false
+                                        };
+                                    }
+                                }, 600);
+                            }
+
                             // Remove soldiers from visual if count decreased
                             while (axisSoldiers.value.length > newAxisCount) {
                                 axisSoldiers.value.pop();
@@ -146,6 +200,10 @@ createApp({
                     if (data.message.includes('Termino la batalla')) {
                         battleInProgress.value = false;
                         battleEnded.value = true;
+                        // Show final winner
+                        setTimeout(() => {
+                            currentBattle.value = { active: false, axisColor: '#4CAF50', urssColor: '#4CAF50', winner: null, showResult: false };
+                        }, 1000);
                         combatLog.value.push('=== BATTLE ENDED ===');
                     }
                     scrollToBottom();
@@ -263,6 +321,7 @@ createApp({
             battleHistory,
             canStartBattle,
             soldierTypes,
+            currentBattle,
 
             // Methods
             initialize,

@@ -82,6 +82,28 @@
                 <!-- Combat Log -->
                 <div class="combat-log">
                     <h3>Combat Log</h3>
+
+                    <!-- Battle Arena -->
+                    <div class="battle-arena" v-if="battleInProgress">
+                        <div class="arena-fighter axis-fighter"
+                             :class="{
+                                 'fighting': currentBattle.active && !currentBattle.showResult,
+                                 'winner': currentBattle.showResult && currentBattle.winner === 'AXIS',
+                                 'loser': currentBattle.showResult && currentBattle.winner === 'URSS'
+                             }"
+                             :style="{ backgroundColor: currentBattle.axisColor }">
+                        </div>
+                        <div class="arena-vs">VS</div>
+                        <div class="arena-fighter urss-fighter"
+                             :class="{
+                                 'fighting': currentBattle.active && !currentBattle.showResult,
+                                 'winner': currentBattle.showResult && currentBattle.winner === 'URSS',
+                                 'loser': currentBattle.showResult && currentBattle.winner === 'AXIS'
+                             }"
+                             :style="{ backgroundColor: currentBattle.urssColor }">
+                        </div>
+                    </div>
+
                     <div class="log-container" ref="logContainer">
                         <div v-for="(event, index) in combatLog" :key="index" 
                              class="log-entry" :class="getLogClass(event)">
