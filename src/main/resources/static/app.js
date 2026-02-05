@@ -22,14 +22,14 @@ createApp({
         const urssDefense = ref(1.95);
         const urssSoldiers = ref([]);
 
-        // Soldier type colors
-        const soldierColors = {
-            fusilero: '#4CAF50',   // Green - Rifleman
-            tanque: '#607D8B',     // Steel Gray - Tank
-            avion: '#2196F3',      // Blue - Aircraft
-            canon: '#FF9800',      // Orange - Cannon
-            trinchero: '#795548',  // Brown - Trench
-            cobarde: '#FFEB3B'     // Yellow - Coward
+        // Soldier type colors and display names
+        const soldierTypes = {
+            fusilero: { color: '#4CAF50', name: 'Rifleman' },
+            tanque: { color: '#607D8B', name: 'Tank' },
+            avion: { color: '#2196F3', name: 'Aircraft' },
+            canon: { color: '#FF9800', name: 'Cannon' },
+            trinchero: { color: '#795548', name: 'Trench' },
+            cobarde: { color: '#FFEB3B', name: 'Coward' }
         };
 
         // Combat log
@@ -230,7 +230,7 @@ createApp({
         }
 
         function getSoldierColor(type) {
-            return soldierColors[type] || '#888888';
+            return soldierTypes[type]?.color || '#888888';
         }
 
         // Lifecycle
@@ -262,7 +262,7 @@ createApp({
             logContainer,
             battleHistory,
             canStartBattle,
-            soldierColors,
+            soldierTypes,
 
             // Methods
             initialize,

@@ -28,9 +28,9 @@
 
             <div class="soldier-legend">
                 <span class="legend-title">Unit Types:</span>
-                <span class="legend-item" v-for="(color, type) in soldierColors" :key="type">
-                    <span class="legend-circle" :style="{ backgroundColor: color }"></span>
-                    {{ type }}
+                <span class="legend-item" v-for="(info, type) in soldierTypes" :key="type">
+                    <span class="legend-circle" :style="{ backgroundColor: info.color }"></span>
+                    {{ info.name }}
                 </span>
             </div>
 
