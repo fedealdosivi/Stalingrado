@@ -22,6 +22,7 @@
         <logback.version>1.4.14</logback.version>
         <slf4j.version>2.0.9</slf4j.version>
         <javafx.version>21.0.1</javafx.version>
+        <spring-boot.version>3.2.1</spring-boot.version>
     </properties>
 
     <dependencies>
@@ -61,6 +62,27 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.2</version>
+        </dependency>
+
+        <!-- Spring Boot Web (for static files and web server) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <!-- Spring Boot WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <!-- Gson for JSON -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
 
         <!-- Testing -->
@@ -155,13 +177,23 @@
                 </executions>
             </plugin>
 
-            <!-- Exec Plugin for easy running -->
+            <!-- Exec Plugin for easy running (JavaFX UI) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
                     <mainClass>View.BattleSimulatorUI</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- Spring Boot Plugin for Web UI -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>Web.WebApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stalingrado Battle Simulator</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Stalingrado Battle Simulator</h1>
+            <div class="connection-status" :class="{ connected: connected }">
+                {{ connected ? 'Connected' : 'Disconnected' }}
+            </div>
+        </header>
+
+        <main>
+            <div class="controls">
+                <button @click="initialize" :disabled="initialized && !battleEnded" class="btn-primary">
+                    {{ initialized ? 'Re-Initialize' : 'Initialize Armies' }}
+                </button>
+                <button @click="startBattle" :disabled="!canStartBattle" class="btn-danger">
+                    Start Battle
+                </button>
+            </div>
+
+            <div class="armies-container">
+                <!-- AXIS Army -->
+                <div class="army-panel axis">
+                    <h2>AXIS</h2>
+                    <div class="soldier-count">
+                        <span class="count">{{ axisCount }}</span>
+                        <span class="label">Soldiers</span>
+                    </div>
+                    
+                    <div class="bonuses">
+                        <div class="bonus">
+                            <label>Attack: {{ axisAttack.toFixed(2) }}</label>
+                            <input type="range" min="0.5" max="5" step="0.05" 
+                                   v-model.number="axisAttack" 
+                                   @change="setBonus('AXIS', 'attack', axisAttack)"
+                                   :disabled="battleInProgress">
+                        </div>
+                        <div class="bonus">
+                            <label>Defense: {{ axisDefense.toFixed(2) }}</label>
+                            <input type="range" min="0.5" max="5" step="0.05" 
+                                   v-model.number="axisDefense" 
+                                   @change="setBonus('AXIS', 'defense', axisDefense)"
+                                   :disabled="battleInProgress">
+                        </div>
+                    </div>
+
+                    <div class="unit-buttons">
+                        <button @click="addSoldiers('AXIS', 'fusilero')" :disabled="battleInProgress">+ Rifleman</button>
+                        <button @click="addSoldiers('AXIS', 'tanque')" :disabled="battleInProgress">+ Tank</button>
+                        <button @click="addSoldiers('AXIS', 'avion')" :disabled="battleInProgress">+ Aircraft</button>
+                        <button @click="addSoldiers('AXIS', 'canon')" :disabled="battleInProgress">+ Cannon</button>
+                        <button @click="addSoldiers('AXIS', 'trinchero')" :disabled="battleInProgress">+ Trench</button>
+                        <button @click="addSoldiers('AXIS', 'cobarde')" :disabled="battleInProgress">+ Coward</button>
+                    </div>
+                </div>
+
+                <!-- Combat Log -->
+                <div class="combat-log">
+                    <h3>Combat Log</h3>
+                    <div class="log-container" ref="logContainer">
+                        <div v-for="(event, index) in combatLog" :key="index" 
+                             class="log-entry" :class="getLogClass(event)">
+                            {{ event }}
+                        </div>
+                        <div v-if="combatLog.length === 0" class="log-empty">
+                            No combat events yet...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URSS Army -->
+                <div class="army-panel urss">
+                    <h2>URSS</h2>
+                    <div class="soldier-count">
+                        <span class="count">{{ urssCount }}</span>
+                        <span class="label">Soldiers</span>
+                    </div>
+                    
+                    <div class="bonuses">
+                        <div class="bonus">
+                            <label>Attack: {{ urssAttack.toFixed(2) }}</label>
+                            <input type="range" min="0.5" max="5" step="0.05" 
+                                   v-model.number="urssAttack" 
+                                   @change="setBonus('URSS', 'attack', urssAttack)"
+                                   :disabled="battleInProgress">
+                        </div>
+                        <div class="bonus">
+                            <label>Defense: {{ urssDefense.toFixed(2) }}</label>
+                            <input type="range" min="0.5" max="5" step="0.05" 
+                                   v-model.number="urssDefense" 
+                                   @change="setBonus('URSS', 'defense', urssDefense)"
+                                   :disabled="battleInProgress">
+                        </div>
+                    </div>
+
+                    <div class="unit-buttons">
+                        <button @click="addSoldiers('URSS', 'fusilero')" :disabled="battleInProgress">+ Rifleman</button>
+                        <button @click="addSoldiers('URSS', 'tanque')" :disabled="battleInProgress">+ Tank</button>
+                        <button @click="addSoldiers('URSS', 'avion')" :disabled="battleInProgress">+ Aircraft</button>
+                        <button @click="addSoldiers('URSS', 'canon')" :disabled="battleInProgress">+ Cannon</button>
+                        <button @click="addSoldiers('URSS', 'trinchero')" :disabled="battleInProgress">+ Trench</button>
+                        <button @click="addSoldiers('URSS', 'cobarde')" :disabled="battleInProgress">+ Coward</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battle History -->
+            <div class="history-section">
+                <h3>Battle History</h3>
+                <button @click="loadHistory" class="btn-secondary">Load History</button>
+                <div class="history-list" v-if="battleHistory.length > 0">
+                    <div v-for="battle in battleHistory" :key="battle.id" class="history-item">
+                        <strong>Battle #{{ battle.id }}</strong>
+                        <p>{{ battle.resultado }}</p>
+                    </div>
+                </div>
+                <div v-else class="history-empty">
+                    No battle history loaded.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
