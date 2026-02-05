@@ -211,6 +211,67 @@ button:disabled {
     background: rgba(255, 255, 255, 0.2);
 }
 
+/* Soldier Visualization */
+.soldier-visualization {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 15px;
+    margin-top: 15px;
+    min-height: 60px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.soldier-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.soldier-circle:hover {
+    transform: scale(1.3);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Soldier Legend */
+.soldier-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.legend-title {
+    font-weight: 600;
+    color: #feca57;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+.legend-circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 .combat-log {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 15px;

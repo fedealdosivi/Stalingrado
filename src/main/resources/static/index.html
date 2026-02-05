@@ -26,6 +26,14 @@
                 </button>
             </div>
 
+            <div class="soldier-legend">
+                <span class="legend-title">Unit Types:</span>
+                <span class="legend-item" v-for="(color, type) in soldierColors" :key="type">
+                    <span class="legend-circle" :style="{ backgroundColor: color }"></span>
+                    {{ type }}
+                </span>
+            </div>
+
             <div class="armies-container">
                 <!-- AXIS Army -->
                 <div class="army-panel axis">
@@ -59,6 +67,15 @@
                         <button @click="addSoldiers('AXIS', 'canon')" :disabled="battleInProgress">+ Cannon</button>
                         <button @click="addSoldiers('AXIS', 'trinchero')" :disabled="battleInProgress">+ Trench</button>
                         <button @click="addSoldiers('AXIS', 'cobarde')" :disabled="battleInProgress">+ Coward</button>
+                    </div>
+
+                    <div class="soldier-visualization">
+                        <div class="soldier-circle"
+                             v-for="(soldier, index) in axisSoldiers"
+                             :key="index"
+                             :style="{ backgroundColor: getSoldierColor(soldier) }"
+                             :title="soldier">
+                        </div>
                     </div>
                 </div>
 
@@ -108,6 +125,15 @@
                         <button @click="addSoldiers('URSS', 'canon')" :disabled="battleInProgress">+ Cannon</button>
                         <button @click="addSoldiers('URSS', 'trinchero')" :disabled="battleInProgress">+ Trench</button>
                         <button @click="addSoldiers('URSS', 'cobarde')" :disabled="battleInProgress">+ Coward</button>
+                    </div>
+
+                    <div class="soldier-visualization">
+                        <div class="soldier-circle"
+                             v-for="(soldier, index) in urssSoldiers"
+                             :key="index"
+                             :style="{ backgroundColor: getSoldierColor(soldier) }"
+                             :title="soldier">
+                        </div>
                     </div>
                 </div>
             </div>

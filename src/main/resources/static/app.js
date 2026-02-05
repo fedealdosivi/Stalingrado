@@ -15,10 +15,22 @@ createApp({
         const axisCount = ref(0);
         const axisAttack = ref(2.95);
         const axisDefense = ref(1.0);
-        
+        const axisSoldiers = ref([]);
+
         const urssCount = ref(0);
         const urssAttack = ref(0.95);
         const urssDefense = ref(1.95);
+        const urssSoldiers = ref([]);
+
+        // Soldier type colors
+        const soldierColors = {
+            fusilero: '#4CAF50',   // Green - Rifleman
+            tanque: '#607D8B',     // Steel Gray - Tank
+            avion: '#2196F3',      // Blue - Aircraft
+            canon: '#FF9800',      // Orange - Cannon
+            trinchero: '#795548',  // Brown - Trench
+            cobarde: '#FFEB3B'     // Yellow - Coward
+        };
 
         // Combat log
         const combatLog = ref([]);
@@ -77,6 +89,8 @@ createApp({
                     battleInProgress.value = false;
                     battleEnded.value = false;
                     combatLog.value = [];
+                    axisSoldiers.value = [];
+                    urssSoldiers.value = [];
                     updateArmyStats(data);
                     combatLog.value.push('Armies initialized! Add soldiers and start the battle.');
                     break;
@@ -84,10 +98,12 @@ createApp({
                 case 'soldiersAdded':
                     if (data.army === 'AXIS') {
                         axisCount.value = data.count;
+                        axisSoldiers.value.push(data.soldierType);
                     } else {
                         urssCount.value = data.count;
+                        urssSoldiers.value.push(data.soldierType);
                     }
-                    combatLog.value.push(`Added ${data.type} to ${data.army}. Total: ${data.count}`);
+                    combatLog.value.push(`Added ${data.soldierType} to ${data.army}. Total: ${data.count}`);
                     scrollToBottom();
                     break;
 
@@ -114,8 +130,17 @@ createApp({
                     if (data.message.includes('Axis:')) {
                         const match = data.message.match(/Axis:\s*(\d+)\s*Urss:\s*(\d+)/);
                         if (match) {
-                            axisCount.value = parseInt(match[1]);
-                            urssCount.value = parseInt(match[2]);
+                            const newAxisCount = parseInt(match[1]);
+                            const newUrssCount = parseInt(match[2]);
+                            // Remove soldiers from visual if count decreased
+                            while (axisSoldiers.value.length > newAxisCount) {
+                                axisSoldiers.value.pop();
+                            }
+                            while (urssSoldiers.value.length > newUrssCount) {
+                                urssSoldiers.value.pop();
+                            }
+                            axisCount.value = newAxisCount;
+                            urssCount.value = newUrssCount;
                         }
                     }
                     if (data.message.includes('Termino la batalla')) {
@@ -204,6 +229,10 @@ createApp({
             return '';
         }
 
+        function getSoldierColor(type) {
+            return soldierColors[type] || '#888888';
+        }
+
         // Lifecycle
         onMounted(() => {
             connect();
@@ -224,21 +253,25 @@ createApp({
             axisCount,
             axisAttack,
             axisDefense,
+            axisSoldiers,
             urssCount,
             urssAttack,
             urssDefense,
+            urssSoldiers,
             combatLog,
             logContainer,
             battleHistory,
             canStartBattle,
-            
+            soldierColors,
+
             // Methods
             initialize,
             addSoldiers,
             setBonus,
             startBattle,
             loadHistory,
-            getLogClass
+            getLogClass,
+            getSoldierColor
         };
     }
 }).mount('#app');

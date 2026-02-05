@@ -103,7 +103,7 @@ public class BattleWebSocketHandler extends TextWebSocketHandler {
         
         sendMessage(session, "soldiersAdded", Map.of(
             "army", army,
-            "type", type,
+            "soldierType", type,
             "count", service.getSoldierCount(army)
         ));
     }
