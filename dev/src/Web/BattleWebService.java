@@ -1,11 +1,13 @@
 package Web;
 
-import AccesoDatos.Dao;
 import Model.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class BattleWebService implements Observer {
@@ -13,12 +15,15 @@ public class BattleWebService implements Observer {
     private Ejercito axis;
     private Ejercito urss;
     private CampoBatalla campo;
-    private Dao acceso;
     private Consumer<String> messageCallback;
     private boolean battleInProgress = false;
 
+    // In-memory battle history (no database needed for production)
+    private static final List<InformeBatalla> battleHistory = Collections.synchronizedList(new ArrayList<>());
+    private static final AtomicInteger battleIdCounter = new AtomicInteger(1);
+
     public BattleWebService() {
-        this.acceso = new Dao();
+        // No database connection needed
     }
 
     public void setMessageCallback(Consumer<String> callback) {
@@ -28,21 +33,21 @@ public class BattleWebService implements Observer {
     public void initialize() {
         this.axis = new Ejercito("AXIS");
         this.urss = new Ejercito("URSS");
-        this.campo = new CampoBatalla();
-        
+        this.campo = new WebCampoBatalla(); // Use web-specific battlefield (no DB)
+
         axis.setCampo(campo);
         urss.setCampo(campo);
         campo.setEjercito1(axis);
         campo.setEjercito2(urss);
         campo.agregarObservador(this);
-        
+
         battleInProgress = false;
     }
 
     public void addSoldiers(String army, String type, int count) {
         Ejercito ejercito = getEjercito(army);
         if (ejercito == null) return;
-        
+
         for (int i = 0; i < count; i++) {
             switch (type.toLowerCase()) {
                 case "tanque":
@@ -71,7 +76,7 @@ public class BattleWebService implements Observer {
     public void setBonus(String army, String type, double value) {
         Ejercito ejercito = getEjercito(army);
         if (ejercito == null) return;
-        
+
         if ("attack".equalsIgnoreCase(type)) {
             ejercito.setBonifataque(value);
         } else if ("defense".equalsIgnoreCase(type)) {
@@ -117,7 +122,8 @@ public class BattleWebService implements Observer {
     }
 
     public ArrayList<InformeBatalla> getBattleHistory() {
-        return acceso.traerLista();
+        // Return in-memory history (works without database)
+        return new ArrayList<>(battleHistory);
     }
 
     public boolean isInitialized() {
@@ -143,9 +149,16 @@ public class BattleWebService implements Observer {
         if (messageCallback != null && arg != null) {
             String message = arg.toString();
             messageCallback.accept(message);
-            
+
+            // When battle ends, save to in-memory history
             if (message.contains("Termino la batalla")) {
                 battleInProgress = false;
+
+                // Save battle result to in-memory history
+                InformeBatalla informe = new InformeBatalla();
+                informe.setId(battleIdCounter.getAndIncrement());
+                informe.setResultadoFinal(message);
+                battleHistory.add(informe);
             }
         }
     }
