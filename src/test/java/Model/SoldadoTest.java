@@ -61,4 +61,40 @@ class SoldadoTest {
         Soldado soldado2 = new Soldado();
         assertNotEquals(soldado1.getId(), soldado2.getId(), "Each soldier should have a unique ID");
     }
+
+    @Test
+    void testDefaultEquipment() {
+        Soldado newSoldado = new Soldado();
+        assertEquals(15, newSoldado.attack(), "Default attack should be Fusil (15)");
+        assertEquals(30, newSoldado.defence(), "Default defense should be Chaleco (30)");
+    }
+
+    @Test
+    void testEquipmentChange() {
+        soldado.subirseAlTanque();
+        soldado.usarTrinchera();
+        assertEquals(40, soldado.attack(), "Attack should be tank (40)");
+        assertEquals(50, soldado.defence(), "Defense should be trench (50)");
+
+        soldado.usarFusil();
+        soldado.ponerseChaleco();
+        assertEquals(15, soldado.attack(), "Attack should be back to rifle (15)");
+        assertEquals(30, soldado.defence(), "Defense should be back to vest (30)");
+    }
+
+    @Test
+    void testToString() {
+        String str = soldado.toString();
+        assertTrue(str.contains("Soldado"), "toString should contain Soldado");
+        assertTrue(str.contains("id="), "toString should contain id");
+    }
+
+    @Test
+    void testGettersAndSetters() {
+        soldado.setId(999L);
+        assertEquals(999L, soldado.getId(), "getId should return set id");
+
+        assertNotNull(soldado.getAtaque(), "getAtaque should not be null");
+        assertNotNull(soldado.getDefenza(), "getDefenza should not be null");
+    }
 }
