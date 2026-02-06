@@ -51,6 +51,7 @@ createApp({
         });
         const fightQueue = ref([]);
         const isProcessingFight = ref(false);
+        const battleEndPending = ref(false); // Track when battle ended but animations still running
 
         // Computed
         const canStartBattle = computed(() => {
@@ -101,9 +102,13 @@ createApp({
                     initialized.value = true;
                     battleInProgress.value = false;
                     battleEnded.value = false;
+                    battleEndPending.value = false;
+                    arenaVisible.value = false;
                     combatLog.value = [];
                     axisSoldiers.value = [];
                     urssSoldiers.value = [];
+                    fightQueue.value = [];
+                    isProcessingFight.value = false;
                     updateArmyStats(data);
                     combatLog.value.push('Armies initialized! Add soldiers and start the battle.');
                     break;
@@ -133,6 +138,7 @@ createApp({
                 case 'battleStarted':
                     battleInProgress.value = true;
                     battleEnded.value = false;
+                    battleEndPending.value = false;
                     arenaVisible.value = true;
                     // Copy soldiers to arena arrays
                     arenaAxisSoldiers.value = [...axisSoldiers.value];
@@ -185,12 +191,19 @@ createApp({
                     if (data.message.includes('Termino la batalla')) {
                         battleInProgress.value = false;
                         battleEnded.value = true;
-                        // Wait for animations to finish before hiding arena
-                        setTimeout(() => {
-                            arenaVisible.value = false;
-                            currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
-                        }, 3000);
                         combatLog.value.push('=== BATTLE ENDED ===');
+
+                        // Mark battle as pending end - will hide arena when all animations complete
+                        battleEndPending.value = true;
+
+                        // If no fights are being processed or queued, hide arena now
+                        if (!isProcessingFight.value && fightQueue.value.length === 0) {
+                            setTimeout(() => {
+                                arenaVisible.value = false;
+                                currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
+                                battleEndPending.value = false;
+                            }, 2000);
+                        }
                     }
                     scrollToBottom();
                     break;
@@ -282,6 +295,14 @@ createApp({
             if (fightQueue.value.length === 0) {
                 isProcessingFight.value = false;
                 currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
+
+                // If battle has ended server-side, hide the arena now
+                if (battleEndPending.value) {
+                    setTimeout(() => {
+                        arenaVisible.value = false;
+                        battleEndPending.value = false;
+                    }, 2000);
+                }
                 return;
             }
 
