@@ -365,13 +365,13 @@ button:disabled {
 }
 
 .axis-side .arena-soldier.moving-to-fight {
-    -webkit-animation: move-axis-to-center 0.8s ease-in-out forwards;
-    animation: move-axis-to-center 0.8s ease-in-out forwards;
+    -webkit-animation: move-axis-to-center 1s ease-in-out forwards;
+    animation: move-axis-to-center 1s ease-in-out forwards;
 }
 
 .urss-side .arena-soldier.moving-to-fight {
-    -webkit-animation: move-urss-to-center 0.8s ease-in-out forwards;
-    animation: move-urss-to-center 0.8s ease-in-out forwards;
+    -webkit-animation: move-urss-to-center 1s ease-in-out forwards;
+    animation: move-urss-to-center 1s ease-in-out forwards;
 }
 
 .arena-soldier.fighting {
@@ -384,16 +384,16 @@ button:disabled {
 }
 
 .arena-soldier.winner {
-    -webkit-animation: soldier-victory 1s ease-out forwards;
-    animation: soldier-victory 1s ease-out forwards;
+    -webkit-animation: soldier-victory 1.2s ease-out forwards;
+    animation: soldier-victory 1.2s ease-out forwards;
     z-index: 10;
     box-shadow: 0 0 30px rgba(0, 255, 0, 1), 0 0 60px rgba(0, 255, 0, 0.5);
     border-color: #00ff00;
 }
 
 .arena-soldier.loser {
-    -webkit-animation: soldier-death 0.8s ease-out forwards;
-    animation: soldier-death 0.8s ease-out forwards;
+    -webkit-animation: soldier-death 1.2s ease-out forwards;
+    animation: soldier-death 1.2s ease-out forwards;
     z-index: 10;
 }
 

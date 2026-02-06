@@ -297,7 +297,16 @@ createApp({
                 return;
             }
 
-            // Phase 1: Moving to center (800ms)
+            // Adjust timing based on queue length (faster if many fights queued)
+            const queueLength = fightQueue.value.length;
+            const speedMultiplier = queueLength > 5 ? 0.5 : queueLength > 2 ? 0.7 : 1;
+
+            const moveTime = Math.round(1000 * speedMultiplier);
+            const clashTime = Math.round(1200 * speedMultiplier);
+            const resultTime = Math.round(1500 * speedMultiplier);
+            const delayTime = Math.round(500 * speedMultiplier);
+
+            // Phase 1: Moving to center
             currentFight.value = {
                 phase: 'moving',
                 axisIndex: axisIdx,
@@ -306,7 +315,7 @@ createApp({
             };
 
             setTimeout(() => {
-                // Phase 2: Clash/Fighting (800ms)
+                // Phase 2: Clash/Fighting
                 currentFight.value = {
                     phase: 'clash',
                     axisIndex: axisIdx,
@@ -315,7 +324,7 @@ createApp({
                 };
 
                 setTimeout(() => {
-                    // Phase 3: Result (1000ms)
+                    // Phase 3: Result
                     currentFight.value = {
                         phase: 'result',
                         axisIndex: axisIdx,
@@ -334,13 +343,13 @@ createApp({
                         // Reset and process next fight
                         currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
 
-                        // Small delay before next fight
+                        // Delay before next fight
                         setTimeout(() => {
                             processNextFight();
-                        }, 400);
-                    }, 1000);
-                }, 800);
-            }, 800);
+                        }, delayTime);
+                    }, resultTime);
+                }, clashTime);
+            }, moveTime);
         }
 
         // Lifecycle
