@@ -159,9 +159,21 @@ createApp({
                             const newAxisCount = parseInt(match[1]);
                             const newUrssCount = parseInt(match[2]);
 
-                            // Determine who lost a soldier
+                            // Determine who lost a soldier based on SIDEBAR arrays
+                            // (they update immediately, arena arrays update after animation)
                             const axisLost = axisSoldiers.value.length > newAxisCount;
                             const urssLost = urssSoldiers.value.length > newUrssCount;
+
+                            console.log('Combat event:', {
+                                sidebarAxis: axisSoldiers.value.length,
+                                sidebarUrss: urssSoldiers.value.length,
+                                newAxisCount,
+                                newUrssCount,
+                                axisLost,
+                                urssLost,
+                                isProcessing: isProcessingFight.value,
+                                queueLength: fightQueue.value.length
+                            });
 
                             if (axisLost || urssLost) {
                                 // Queue this fight for animation
@@ -170,8 +182,10 @@ createApp({
                                     newAxisCount,
                                     newUrssCount
                                 });
+                                console.log('Queued fight, queue length:', fightQueue.value.length);
                                 // Start processing if not already
                                 if (!isProcessingFight.value) {
+                                    console.log('Starting processNextFight');
                                     processNextFight();
                                 }
                             }
@@ -179,7 +193,7 @@ createApp({
                             // Update the logical counts (sidebar displays)
                             axisCount.value = newAxisCount;
                             urssCount.value = newUrssCount;
-                            // Update soldier arrays
+                            // Update soldier arrays (sidebar only)
                             while (axisSoldiers.value.length > newAxisCount) {
                                 axisSoldiers.value.pop();
                             }
@@ -292,7 +306,10 @@ createApp({
 
         // Process fight animations with delays
         function processNextFight() {
+            console.log('processNextFight called, queue length:', fightQueue.value.length);
+
             if (fightQueue.value.length === 0) {
+                console.log('Queue empty, stopping processing');
                 isProcessingFight.value = false;
                 currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
 
@@ -313,7 +330,16 @@ createApp({
             const axisIdx = arenaAxisSoldiers.value.length - 1;
             const urssIdx = arenaUrssSoldiers.value.length - 1;
 
+            console.log('Processing fight:', {
+                winner: fight.winner,
+                axisIdx,
+                urssIdx,
+                arenaAxisCount: arenaAxisSoldiers.value.length,
+                arenaUrssCount: arenaUrssSoldiers.value.length
+            });
+
             if (axisIdx < 0 || urssIdx < 0) {
+                console.log('Invalid indexes, skipping to next fight');
                 processNextFight();
                 return;
             }
@@ -356,15 +382,20 @@ createApp({
                     setTimeout(() => {
                         // Remove the loser from arena
                         if (fight.winner === 'URSS') {
+                            console.log('Removing AXIS soldier (loser), before:', arenaAxisSoldiers.value.length);
                             arenaAxisSoldiers.value.pop();
+                            console.log('After removal:', arenaAxisSoldiers.value.length);
                         } else {
+                            console.log('Removing URSS soldier (loser), before:', arenaUrssSoldiers.value.length);
                             arenaUrssSoldiers.value.pop();
+                            console.log('After removal:', arenaUrssSoldiers.value.length);
                         }
 
                         // Reset and process next fight
                         currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
 
                         // Delay before next fight
+                        console.log('Fight animation complete, waiting before next fight');
                         setTimeout(() => {
                             processNextFight();
                         }, delayTime);

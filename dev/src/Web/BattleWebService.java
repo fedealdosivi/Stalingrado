@@ -84,9 +84,16 @@ public class BattleWebService implements Observer {
         }
     }
 
+    // Animation timing: move(1s) + clash(1.2s) + result(1.5s) + delay(0.5s) = ~4.2s
+    private static final long COMBAT_ANIMATION_DELAY_MS = 4200;
+
     public void startBattle() {
         if (isInitialized() && !battleInProgress) {
             battleInProgress = true;
+
+            // Set delay to allow web UI animations to complete between combats
+            campo.setCombatDelayMs(COMBAT_ANIMATION_DELAY_MS);
+
             axis.start();
             urss.start();
         }

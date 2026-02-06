@@ -12,6 +12,11 @@ public class CampoBatalla extends Observable {
     private Ejercito ejercito2;
     private boolean ganador = false;
 
+    // Optional delay between combats (in milliseconds)
+    // Default is 0 (no delay) for console/JavaFX
+    // Web UI sets this to allow time for animations
+    private long combatDelayMs = 0;
+
     public void agregarObservador(Observer observer)
     {
         addObserver(observer);
@@ -26,21 +31,43 @@ public class CampoBatalla extends Observable {
                 if (ejercito1.getBando().equals(bando)) {
                     String msg="Entro " + ejercito1.getBando();
                     msg=msg+" "+ejercito1.enfrentarse(ejercito2);
+                    // Append soldier counts for web UI parsing
+                    msg=msg+" Soldados vivos: Axis: "+ejercito1.cantidadSoldados()+" Urss: "+ejercito2.cantidadSoldados();
                     this.setDisponible(true);
                     notifyAll();
                     setChanged();
                     notifyObservers(msg);
                     this.ganador = todaviaHaySoldados();
+
+                    // Wait for UI animation if delay is configured
+                    if (combatDelayMs > 0 && !this.ganador) {
+                        System.out.println("[CampoBatalla] Applying delay: " + combatDelayMs + "ms");
+                        Thread.sleep(combatDelayMs);
+                        System.out.println("[CampoBatalla] Delay completed");
+                    } else {
+                        System.out.println("[CampoBatalla] No delay: delayMs=" + combatDelayMs + ", ganador=" + this.ganador);
+                    }
                 }
 
                 if (ejercito2.getBando().equals(bando)) {
                     String msg="Entro " + ejercito2.getBando();
                     msg=msg+" "+ejercito2.enfrentarse(ejercito1);
+                    // Append soldier counts for web UI parsing
+                    msg=msg+" Soldados vivos: Axis: "+ejercito1.cantidadSoldados()+" Urss: "+ejercito2.cantidadSoldados();
                     this.setDisponible(true);
                     notifyAll();
                     setChanged();
                     notifyObservers(msg);
                     this.ganador = todaviaHaySoldados();
+
+                    // Wait for UI animation if delay is configured
+                    if (combatDelayMs > 0 && !this.ganador) {
+                        System.out.println("[CampoBatalla] Applying delay: " + combatDelayMs + "ms");
+                        Thread.sleep(combatDelayMs);
+                        System.out.println("[CampoBatalla] Delay completed");
+                    } else {
+                        System.out.println("[CampoBatalla] No delay: delayMs=" + combatDelayMs + ", ganador=" + this.ganador);
+                    }
                 }
             } else {
                 wait();
@@ -99,6 +126,20 @@ public class CampoBatalla extends Observable {
 
     public void setGanador(boolean ganador) {
         this.ganador = ganador;
+    }
+
+    /**
+     * Sets the delay between combat rounds (in milliseconds).
+     * Used by web UI to allow time for animations.
+     * Default is 0 (no delay) for console and JavaFX.
+     * @param delayMs delay in milliseconds (0 = no delay)
+     */
+    public void setCombatDelayMs(long delayMs) {
+        this.combatDelayMs = delayMs;
+    }
+
+    public long getCombatDelayMs() {
+        return combatDelayMs;
     }
 
 }
