@@ -40,13 +40,17 @@ createApp({
         const battleHistory = ref([]);
 
         // Battle animation state
-        const currentBattle = ref({
-            active: false,
-            axisColor: '#4CAF50',
-            urssColor: '#4CAF50',
-            winner: null,
-            showResult: false
+        const arenaVisible = ref(false);
+        const arenaAxisSoldiers = ref([]);
+        const arenaUrssSoldiers = ref([]);
+        const currentFight = ref({
+            phase: null, // 'moving', 'clash', 'result', null
+            axisIndex: -1,
+            urssIndex: -1,
+            winner: null
         });
+        const fightQueue = ref([]);
+        const isProcessingFight = ref(false);
 
         // Computed
         const canStartBattle = computed(() => {
@@ -129,16 +133,13 @@ createApp({
                 case 'battleStarted':
                     battleInProgress.value = true;
                     battleEnded.value = false;
-                    // Initialize battle arena with first soldiers from each army
-                    const startAxisType = axisSoldiers.value.length > 0 ? axisSoldiers.value[0] : 'fusilero';
-                    const startUrssType = urssSoldiers.value.length > 0 ? urssSoldiers.value[0] : 'fusilero';
-                    currentBattle.value = {
-                        active: true,
-                        axisColor: soldierTypes[startAxisType]?.color || '#4CAF50',
-                        urssColor: soldierTypes[startUrssType]?.color || '#4CAF50',
-                        winner: null,
-                        showResult: false
-                    };
+                    arenaVisible.value = true;
+                    // Copy soldiers to arena arrays
+                    arenaAxisSoldiers.value = [...axisSoldiers.value];
+                    arenaUrssSoldiers.value = [...urssSoldiers.value];
+                    fightQueue.value = [];
+                    isProcessingFight.value = false;
+                    currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
                     combatLog.value.push('=== BATTLE STARTED ===');
                     scrollToBottom();
                     break;
@@ -152,58 +153,43 @@ createApp({
                             const newAxisCount = parseInt(match[1]);
                             const newUrssCount = parseInt(match[2]);
 
-                            // Determine who lost a soldier and trigger animation
+                            // Determine who lost a soldier
                             const axisLost = axisSoldiers.value.length > newAxisCount;
                             const urssLost = urssSoldiers.value.length > newUrssCount;
 
                             if (axisLost || urssLost) {
-                                // Get colors for the fighting soldiers (the ones about to be removed)
-                                const fightAxisType = axisSoldiers.value.length > 0 ? axisSoldiers.value[axisSoldiers.value.length - 1] : 'fusilero';
-                                const fightUrssType = urssSoldiers.value.length > 0 ? urssSoldiers.value[urssSoldiers.value.length - 1] : 'fusilero';
-
-                                // Show the fight result
-                                currentBattle.value = {
-                                    active: true,
-                                    axisColor: soldierTypes[fightAxisType]?.color || '#4CAF50',
-                                    urssColor: soldierTypes[fightUrssType]?.color || '#4CAF50',
+                                // Queue this fight for animation
+                                fightQueue.value.push({
                                     winner: axisLost ? 'URSS' : 'AXIS',
-                                    showResult: true
-                                };
-
-                                // After animation, go back to fighting state with next soldiers
-                                setTimeout(() => {
-                                    if (battleInProgress.value && newAxisCount > 0 && newUrssCount > 0) {
-                                        const nextAxisType = axisSoldiers.value.length > 1 ? axisSoldiers.value[axisSoldiers.value.length - 2] : 'fusilero';
-                                        const nextUrssType = urssSoldiers.value.length > 1 ? urssSoldiers.value[urssSoldiers.value.length - 2] : 'fusilero';
-                                        currentBattle.value = {
-                                            active: true,
-                                            axisColor: soldierTypes[nextAxisType]?.color || '#4CAF50',
-                                            urssColor: soldierTypes[nextUrssType]?.color || '#4CAF50',
-                                            winner: null,
-                                            showResult: false
-                                        };
-                                    }
-                                }, 600);
+                                    newAxisCount,
+                                    newUrssCount
+                                });
+                                // Start processing if not already
+                                if (!isProcessingFight.value) {
+                                    processNextFight();
+                                }
                             }
 
-                            // Remove soldiers from visual if count decreased
+                            // Update the logical counts (sidebar displays)
+                            axisCount.value = newAxisCount;
+                            urssCount.value = newUrssCount;
+                            // Update soldier arrays
                             while (axisSoldiers.value.length > newAxisCount) {
                                 axisSoldiers.value.pop();
                             }
                             while (urssSoldiers.value.length > newUrssCount) {
                                 urssSoldiers.value.pop();
                             }
-                            axisCount.value = newAxisCount;
-                            urssCount.value = newUrssCount;
                         }
                     }
                     if (data.message.includes('Termino la batalla')) {
                         battleInProgress.value = false;
                         battleEnded.value = true;
-                        // Show final winner
+                        // Wait for animations to finish before hiding arena
                         setTimeout(() => {
-                            currentBattle.value = { active: false, axisColor: '#4CAF50', urssColor: '#4CAF50', winner: null, showResult: false };
-                        }, 1000);
+                            arenaVisible.value = false;
+                            currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
+                        }, 3000);
                         combatLog.value.push('=== BATTLE ENDED ===');
                     }
                     scrollToBottom();
@@ -291,6 +277,72 @@ createApp({
             return soldierTypes[type]?.color || '#888888';
         }
 
+        // Process fight animations with delays
+        function processNextFight() {
+            if (fightQueue.value.length === 0) {
+                isProcessingFight.value = false;
+                currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
+                return;
+            }
+
+            isProcessingFight.value = true;
+            const fight = fightQueue.value.shift();
+
+            // Get the last soldier index from each arena side (the ones fighting)
+            const axisIdx = arenaAxisSoldiers.value.length - 1;
+            const urssIdx = arenaUrssSoldiers.value.length - 1;
+
+            if (axisIdx < 0 || urssIdx < 0) {
+                processNextFight();
+                return;
+            }
+
+            // Phase 1: Moving to center (800ms)
+            currentFight.value = {
+                phase: 'moving',
+                axisIndex: axisIdx,
+                urssIndex: urssIdx,
+                winner: null
+            };
+
+            setTimeout(() => {
+                // Phase 2: Clash/Fighting (800ms)
+                currentFight.value = {
+                    phase: 'clash',
+                    axisIndex: axisIdx,
+                    urssIndex: urssIdx,
+                    winner: null
+                };
+
+                setTimeout(() => {
+                    // Phase 3: Result (1000ms)
+                    currentFight.value = {
+                        phase: 'result',
+                        axisIndex: axisIdx,
+                        urssIndex: urssIdx,
+                        winner: fight.winner
+                    };
+
+                    setTimeout(() => {
+                        // Remove the loser from arena
+                        if (fight.winner === 'URSS') {
+                            arenaAxisSoldiers.value.pop();
+                        } else {
+                            arenaUrssSoldiers.value.pop();
+                        }
+
+                        // Reset and process next fight
+                        currentFight.value = { phase: null, axisIndex: -1, urssIndex: -1, winner: null };
+
+                        // Small delay before next fight
+                        setTimeout(() => {
+                            processNextFight();
+                        }, 400);
+                    }, 1000);
+                }, 800);
+            }, 800);
+        }
+
         // Lifecycle
         onMounted(() => {
             connect();
@@ -321,7 +373,10 @@ createApp({
             battleHistory,
             canStartBattle,
             soldierTypes,
-            currentBattle,
+            arenaVisible,
+            arenaAxisSoldiers,
+            arenaUrssSoldiers,
+            currentFight,
 
             // Methods
             initialize,

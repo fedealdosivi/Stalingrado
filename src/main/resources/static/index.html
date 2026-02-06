@@ -84,23 +84,45 @@
                     <h3>Combat Log</h3>
 
                     <!-- Battle Arena -->
-                    <div class="battle-arena" v-if="battleInProgress">
-                        <div class="arena-fighter axis-fighter"
-                             :class="{
-                                 'fighting': currentBattle.active && !currentBattle.showResult,
-                                 'winner': currentBattle.showResult && currentBattle.winner === 'AXIS',
-                                 'loser': currentBattle.showResult && currentBattle.winner === 'URSS'
-                             }"
-                             :style="{ backgroundColor: currentBattle.axisColor }">
+                    <div class="battle-arena" v-if="battleInProgress || arenaVisible">
+                        <!-- AXIS Army Side -->
+                        <div class="arena-side axis-side">
+                            <div v-for="(soldier, index) in arenaAxisSoldiers"
+                                 :key="'axis-'+index"
+                                 class="arena-soldier"
+                                 :class="{
+                                     'moving-to-fight': currentFight.phase === 'moving' && currentFight.axisIndex === index,
+                                     'fighting': currentFight.phase === 'clash' && currentFight.axisIndex === index,
+                                     'winner': currentFight.phase === 'result' && currentFight.axisIndex === index && currentFight.winner === 'AXIS',
+                                     'loser': currentFight.phase === 'result' && currentFight.axisIndex === index && currentFight.winner === 'URSS'
+                                 }"
+                                 :style="{ backgroundColor: getSoldierColor(soldier) }">
+                            </div>
                         </div>
-                        <div class="arena-vs">VS</div>
-                        <div class="arena-fighter urss-fighter"
-                             :class="{
-                                 'fighting': currentBattle.active && !currentBattle.showResult,
-                                 'winner': currentBattle.showResult && currentBattle.winner === 'URSS',
-                                 'loser': currentBattle.showResult && currentBattle.winner === 'AXIS'
-                             }"
-                             :style="{ backgroundColor: currentBattle.urssColor }">
+
+                        <!-- Fight Zone -->
+                        <div class="fight-zone">
+                            <div class="fight-label" v-if="currentFight.phase">
+                                {{ currentFight.phase === 'moving' ? 'APPROACHING...' :
+                                   currentFight.phase === 'clash' ? 'FIGHTING!' :
+                                   currentFight.phase === 'result' ? (currentFight.winner + ' WINS!') : '' }}
+                            </div>
+                            <div class="fight-vs" v-if="currentFight.phase === 'clash'">VS</div>
+                        </div>
+
+                        <!-- URSS Army Side -->
+                        <div class="arena-side urss-side">
+                            <div v-for="(soldier, index) in arenaUrssSoldiers"
+                                 :key="'urss-'+index"
+                                 class="arena-soldier"
+                                 :class="{
+                                     'moving-to-fight': currentFight.phase === 'moving' && currentFight.urssIndex === index,
+                                     'fighting': currentFight.phase === 'clash' && currentFight.urssIndex === index,
+                                     'winner': currentFight.phase === 'result' && currentFight.urssIndex === index && currentFight.winner === 'URSS',
+                                     'loser': currentFight.phase === 'result' && currentFight.urssIndex === index && currentFight.winner === 'AXIS'
+                                 }"
+                                 :style="{ backgroundColor: getSoldierColor(soldier) }">
+                            </div>
                         </div>
                     </div>
 
