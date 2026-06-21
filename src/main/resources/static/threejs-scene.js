@@ -22,10 +22,10 @@ function material(color) {
 function buildRifleman(color) {
     const group = new THREE.Group();
     const mat = material(color);
-    const body = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.55, 8), mat);
-    body.position.y = 0.4;
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 10), mat);
-    head.position.y = 0.75;
+    const body = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.88, 8), mat);
+    body.position.y = 0.64;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), mat);
+    head.position.y = 1.2;
     group.add(body, head);
     return group;
 }
@@ -33,13 +33,13 @@ function buildRifleman(color) {
 function buildTank(color) {
     const group = new THREE.Group();
     const mat = material(color);
-    const hull = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.35, 0.55), mat);
-    hull.position.y = 0.25;
-    const turret = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.22, 12), mat);
-    turret.position.y = 0.52;
-    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.55, 8), mat);
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.56, 0.88), mat);
+    hull.position.y = 0.4;
+    const turret = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.32, 0.35, 12), mat);
+    turret.position.y = 0.83;
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.064, 0.064, 0.88, 8), mat);
     barrel.rotation.z = Math.PI / 2;
-    barrel.position.set(0.45, 0.52, 0);
+    barrel.position.set(0.72, 0.83, 0);
     group.add(hull, turret, barrel);
     return group;
 }
@@ -47,9 +47,9 @@ function buildTank(color) {
 function buildAircraft(color) {
     const group = new THREE.Group();
     const mat = material(color);
-    const fuselage = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.75, 6), mat);
+    const fuselage = new THREE.Mesh(new THREE.ConeGeometry(0.26, 1.2, 6), mat);
     fuselage.rotation.x = Math.PI / 2;
-    const wings = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.04, 0.2), mat);
+    const wings = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.064, 0.32), mat);
     group.add(fuselage, wings);
     return group;
 }
@@ -57,11 +57,11 @@ function buildAircraft(color) {
 function buildCannon(color) {
     const group = new THREE.Group();
     const mat = material(color);
-    const base = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.25, 0.5), mat);
-    base.position.y = 0.15;
-    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.7, 10), mat);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), mat);
+    base.position.y = 0.24;
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.112, 0.16, 1.12, 10), mat);
     barrel.rotation.z = Math.PI / 2.6;
-    barrel.position.set(0.25, 0.42, 0);
+    barrel.position.set(0.4, 0.67, 0);
     group.add(base, barrel);
     return group;
 }
@@ -69,8 +69,8 @@ function buildCannon(color) {
 function buildTrench(color) {
     const group = new THREE.Group();
     const mat = material(color);
-    const mound = new THREE.Mesh(new THREE.BoxGeometry(1, 0.2, 0.6), mat);
-    mound.position.y = 0.1;
+    const mound = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.32, 0.96), mat);
+    mound.position.y = 0.16;
     group.add(mound);
     return group;
 }
@@ -78,8 +78,8 @@ function buildTrench(color) {
 function buildCoward(color) {
     const group = new THREE.Group();
     const mat = material(color);
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), mat);
-    ball.position.y = 0.22;
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 12), mat);
+    ball.position.y = 0.35;
     group.add(ball);
     return group;
 }
@@ -100,8 +100,8 @@ function createUnitMesh(army, type) {
     const baseMat = new THREE.MeshStandardMaterial({
         color: armyColor, emissive: armyColor, emissiveIntensity: 0.35, transparent: true, opacity: 1,
     });
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.06, 16), baseMat);
-    base.position.y = 0.03;
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.1, 16), baseMat);
+    base.position.y = 0.05;
     group.add(base);
 
     const build = BUILDERS[type] || buildRifleman;
@@ -133,17 +133,17 @@ export class BattleScene {
         this.scene.fog = new THREE.Fog(0x10131f, 25, 65);
 
         this.camera = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
-        this.camera.position.set(2, 13, 19);
+        this.camera.position.set(3, 17, 25);
 
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this._onResize();
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.target.set(0, 0.5, 0);
+        this.controls.target.set(0, 0.8, 0);
         this.controls.maxPolarAngle = Math.PI / 2.05;
-        this.controls.minDistance = 6;
-        this.controls.maxDistance = 40;
+        this.controls.minDistance = 8;
+        this.controls.maxDistance = 55;
         this.controls.update();
 
         this.scene.add(new THREE.HemisphereLight(0xffffff, 0x222233, 0.9));
@@ -231,12 +231,31 @@ export class BattleScene {
             if (unit.fighting) return;
             const row = Math.floor(i / cols);
             const col = i % cols;
-            const x = sign * (4 + col * 1.6);
-            const z = (row - 2.5) * 1.6;
-            const y = unit.type === 'avion' ? 2.2 : 0;
+            const x = sign * (6.4 + col * 2.6);
+            const z = (row - 2.5) * 2.6;
+            const y = unit.type === 'avion' ? 3.5 : 0;
             unit.homeY = y;
             unit.target = new THREE.Vector3(x, y, z);
         });
+    }
+
+    // Lets callers (e.g. to show a victory banner) wait until the current
+    // fight-animation queue has fully drained, instead of firing the instant
+    // the server reports the battle as over while units are still animating.
+    whenIdle(callback, timeoutMs = 8000) {
+        const start = performance.now();
+        const check = () => {
+            if (!this.isProcessingFight && this.fightQueue.length === 0) {
+                callback();
+                return;
+            }
+            if (performance.now() - start > timeoutMs) {
+                callback();
+                return;
+            }
+            setTimeout(check, 200);
+        };
+        check();
     }
 
     _processNextFight() {
@@ -263,8 +282,8 @@ export class BattleScene {
         const speed = this.fightQueue.length > 5 ? 0.5 : this.fightQueue.length > 2 ? 0.7 : 1;
         const moveTime = 700 * speed, clashTime = 500 * speed, resultTime = 600 * speed, gapTime = 300 * speed;
 
-        axisUnit.target = new THREE.Vector3(-1.2, axisUnit.homeY, 0);
-        urssUnit.target = new THREE.Vector3(1.2, urssUnit.homeY, 0);
+        axisUnit.target = new THREE.Vector3(-1.9, axisUnit.homeY, 0);
+        urssUnit.target = new THREE.Vector3(1.9, urssUnit.homeY, 0);
 
         setTimeout(() => {
             axisUnit.targetScale = 1.4;

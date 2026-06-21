@@ -64,6 +64,18 @@ export function logEvent(message) {
     container.scrollTop = container.scrollHeight;
 }
 
+export function showVictory(winnerArmy) {
+    const banner = document.getElementById('victoryBanner');
+    const text = banner.querySelector('.victory-text');
+    text.textContent = `${winnerArmy} WINS!`;
+    text.className = `victory-text ${winnerArmy === 'AXIS' ? 'axis' : 'urss'}`;
+    banner.classList.add('show');
+}
+
+export function hideVictory() {
+    document.getElementById('victoryBanner').classList.remove('show');
+}
+
 function classifyLogEntry(message) {
     if (message.includes('===')) return 'battle-marker';
     if (message.toUpperCase().includes('ERROR')) return 'error-event';

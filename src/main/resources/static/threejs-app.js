@@ -2,7 +2,7 @@ import { BattleSocket } from './threejs-ws.js';
 import { BattleScene } from './threejs-scene.js';
 import {
     bindControls, setConnected, setBattleButtonsState,
-    updateArmyPanel, logEvent, renderHistory,
+    updateArmyPanel, logEvent, renderHistory, showVictory, hideVictory,
 } from './threejs-controls.js';
 
 const canvas = document.getElementById('battleCanvas');
@@ -54,6 +54,7 @@ socket.addEventListener('message', (event) => {
             state.battleInProgress = false;
             state.battleEnded = false;
             scene.reset();
+            hideVictory();
             updateArmyPanel('AXIS', { count: data.axis.soldiers, attackBonus: data.axis.attackBonus, defenseBonus: data.axis.defenseBonus });
             updateArmyPanel('URSS', { count: data.urss.soldiers, attackBonus: data.urss.attackBonus, defenseBonus: data.urss.defenseBonus });
             state.axisCount = data.axis.soldiers;
@@ -79,6 +80,7 @@ socket.addEventListener('message', (event) => {
         case 'battleStarted':
             state.battleInProgress = true;
             state.battleEnded = false;
+            hideVictory();
             logEvent('=== BATTLE STARTED ===');
             refreshButtons();
             break;
@@ -133,6 +135,9 @@ function handleCombatEvent(message) {
         state.battleEnded = true;
         logEvent('=== BATTLE ENDED ===');
         refreshButtons();
+
+        const winner = state.axisCount > 0 ? 'AXIS' : state.urssCount > 0 ? 'URSS' : null;
+        if (winner) scene.whenIdle(() => showVictory(winner));
     }
 }
 
