@@ -26,43 +26,95 @@ function buildRifleman(color) {
     body.position.y = 0.64;
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), mat);
     head.position.y = 1.2;
-    group.add(body, head);
+    const rifle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 1.15), mat);
+    rifle.position.set(0.3, 0.78, 0.1);
+    rifle.rotation.y = Math.PI / 5;
+    rifle.rotation.x = -Math.PI / 11;
+    group.add(body, head, rifle);
     return group;
 }
 
-function buildTank(color) {
+function buildTank(color, army) {
     const group = new THREE.Group();
     const mat = material(color);
-    const hull = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.56, 0.88), mat);
-    hull.position.y = 0.4;
-    const turret = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.32, 0.35, 12), mat);
-    turret.position.y = 0.83;
-    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.064, 0.064, 0.88, 8), mat);
-    barrel.rotation.z = Math.PI / 2;
-    barrel.position.set(0.72, 0.83, 0);
-    group.add(hull, turret, barrel);
+
+    if (army === 'AXIS') {
+        const hull = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.5, 0.9), mat);
+        hull.position.y = 0.3;
+        const turret = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.32, 0.58), mat);
+        turret.position.set(-0.12, 0.71, 0);
+        const cupola = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.14, 8), mat);
+        cupola.position.set(-0.12, 0.94, 0);
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 1.1, 8), mat);
+        barrel.rotation.z = Math.PI / 2;
+        barrel.position.set(0.78, 0.71, 0);
+        group.add(hull, turret, cupola, barrel);
+    } else {
+        const hull = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.46, 0.85), mat);
+        hull.position.y = 0.28;
+        const turret = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.34, 14), mat);
+        turret.position.set(0.18, 0.66, 0);
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.78, 8), mat);
+        barrel.rotation.z = Math.PI / 2;
+        barrel.position.set(0.68, 0.66, 0);
+        group.add(hull, turret, barrel);
+    }
     return group;
 }
 
-function buildAircraft(color) {
+function buildAircraft(color, army) {
     const group = new THREE.Group();
     const mat = material(color);
-    const fuselage = new THREE.Mesh(new THREE.ConeGeometry(0.26, 1.2, 6), mat);
-    fuselage.rotation.x = Math.PI / 2;
-    const wings = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.064, 0.32), mat);
-    group.add(fuselage, wings);
+
+    if (army === 'AXIS') {
+        const fuselage = new THREE.Mesh(new THREE.ConeGeometry(0.2, 1.35, 8), mat);
+        fuselage.rotation.x = Math.PI / 2;
+        const wings = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.05, 0.26), mat);
+        const tailFin = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.3, 6), mat);
+        tailFin.position.set(0, 0.17, -0.58);
+        tailFin.rotation.x = Math.PI / 2;
+        group.add(fuselage, wings, tailFin);
+    } else {
+        const fuselage = new THREE.Mesh(new THREE.SphereGeometry(0.32, 10, 10), mat);
+        fuselage.scale.set(1, 0.85, 1.7);
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.23, 10, 10), mat);
+        nose.position.z = 0.56;
+        const wings = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.06, 0.34), mat);
+        group.add(fuselage, nose, wings);
+    }
     return group;
 }
 
-function buildCannon(color) {
+function buildCannon(color, army) {
     const group = new THREE.Group();
     const mat = material(color);
-    const base = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), mat);
-    base.position.y = 0.24;
-    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.112, 0.16, 1.12, 10), mat);
-    barrel.rotation.z = Math.PI / 2.6;
-    barrel.position.set(0.4, 0.67, 0);
-    group.add(base, barrel);
+    const wheelMat = material(0x2a2a2a);
+
+    if (army === 'AXIS') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.3, 0.7), mat);
+        base.position.y = 0.2;
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 1.35, 10), mat);
+        barrel.rotation.z = Math.PI / 2.7;
+        barrel.position.set(0.45, 0.5, 0);
+        const wheelL = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 14), wheelMat);
+        wheelL.rotation.x = Math.PI / 2;
+        wheelL.position.set(-0.1, 0.22, 0.42);
+        const wheelR = wheelL.clone();
+        wheelR.position.z = -0.42;
+        group.add(base, barrel, wheelL, wheelR);
+    } else {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.32, 0.75), mat);
+        base.position.y = 0.22;
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.13, 1.0, 10), mat);
+        barrel.rotation.z = Math.PI / 3.2;
+        barrel.position.set(0.35, 0.5, 0);
+        const wheelL = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.09, 14), wheelMat);
+        wheelL.rotation.x = Math.PI / 2;
+        wheelL.position.set(-0.05, 0.28, 0.45);
+        const wheelR = wheelL.clone();
+        wheelR.position.z = -0.45;
+        group.add(base, barrel, wheelL, wheelR);
+    }
     return group;
 }
 
@@ -106,7 +158,7 @@ function createUnitMesh(army, type) {
 
     const build = BUILDERS[type] || buildRifleman;
     const typeColor = UNIT_COLORS[type] ?? 0x888888;
-    group.add(build(typeColor));
+    group.add(build(typeColor, army));
 
     return group;
 }

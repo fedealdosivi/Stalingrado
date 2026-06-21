@@ -30,9 +30,12 @@ export function setConnected(connected) {
     el.classList.toggle('connected', connected);
 }
 
-export function setBattleButtonsState({ initialized, battleInProgress, battleEnded, axisCount, urssCount }) {
+export function setBattleButtonsState({ initialized, battleInProgress, axisCount, urssCount }) {
     const btnInit = document.getElementById('btnInit');
-    btnInit.disabled = initialized && !battleEnded;
+    // Only block re-init while a battle is actively running (the backend's
+    // army/campo threads are still live) - re-initializing any other time,
+    // including right after a fresh init, is always safe.
+    btnInit.disabled = battleInProgress;
     btnInit.textContent = initialized ? 'Re-Initialize' : 'Initialize Armies';
     document.getElementById('btnStart').disabled = !(initialized && !battleInProgress && axisCount > 0 && urssCount > 0);
     document.querySelectorAll('.unit-buttons button').forEach((btn) => { btn.disabled = battleInProgress; });
