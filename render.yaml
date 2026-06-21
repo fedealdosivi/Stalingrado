@@ -7,3 +7,14 @@ services:
     envVars:
       - key: PORT
         value: 8080
+
+  # Separate instance for testing the Three.js 3D POC (src/main/resources/static/threejs.html)
+  # side-by-side with the existing service above, without touching it.
+  - type: web
+    name: stalingrado-battle-simulator-poc
+    runtime: docker
+    plan: free
+    healthCheckPath: /threejs.html
+    envVars:
+      - key: PORT
+        value: 8080

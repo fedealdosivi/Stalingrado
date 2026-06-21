@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stalingrado Battle Simulator — 3D POC</title>
+    <link rel="stylesheet" href="threejs-style.css">
+</head>
+<body>
+    <div id="app3d">
+        <header>
+            <h1>Stalingrado Battle Simulator <span class="badge">3D POC</span></h1>
+            <div class="connection-status" id="connectionStatus">Disconnected</div>
+        </header>
+
+        <div class="layout">
+            <canvas id="battleCanvas"></canvas>
+
+            <aside class="panel">
+                <div class="panel-section">
+                    <button id="btnInit" class="btn-primary">Initialize Armies</button>
+                    <button id="btnStart" class="btn-danger" disabled>Start Battle</button>
+                </div>
+
+                <div class="panel-section armies-summary">
+                    <div class="army-summary axis">
+                        <h3>AXIS</h3>
+                        <div class="count" id="axisCount">0</div>
+                        <label>Attack <span id="axisAttackVal">2.95</span></label>
+                        <input type="range" id="axisAttack" min="0.5" max="5" step="0.05" value="2.95">
+                        <label>Defense <span id="axisDefenseVal">1.00</span></label>
+                        <input type="range" id="axisDefense" min="0.5" max="5" step="0.05" value="1.0">
+                        <div class="unit-buttons">
+                            <button data-army="AXIS" data-type="fusilero">+ Rifleman</button>
+                            <button data-army="AXIS" data-type="tanque">+ Tank</button>
+                            <button data-army="AXIS" data-type="avion">+ Aircraft</button>
+                            <button data-army="AXIS" data-type="canon">+ Cannon</button>
+                            <button data-army="AXIS" data-type="trinchero">+ Trench</button>
+                            <button data-army="AXIS" data-type="cobarde">+ Coward</button>
+                        </div>
+                    </div>
+
+                    <div class="army-summary urss">
+                        <h3>URSS</h3>
+                        <div class="count" id="urssCount">0</div>
+                        <label>Attack <span id="urssAttackVal">0.95</span></label>
+                        <input type="range" id="urssAttack" min="0.5" max="5" step="0.05" value="0.95">
+                        <label>Defense <span id="urssDefenseVal">1.95</span></label>
+                        <input type="range" id="urssDefense" min="0.5" max="5" step="0.05" value="1.95">
+                        <div class="unit-buttons">
+                            <button data-army="URSS" data-type="fusilero">+ Rifleman</button>
+                            <button data-army="URSS" data-type="tanque">+ Tank</button>
+                            <button data-army="URSS" data-type="avion">+ Aircraft</button>
+                            <button data-army="URSS" data-type="canon">+ Cannon</button>
+                            <button data-army="URSS" data-type="trinchero">+ Trench</button>
+                            <button data-army="URSS" data-type="cobarde">+ Coward</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section legend">
+                    <span class="legend-title">Unit Types:</span>
+                    <span class="legend-item"><span class="swatch" style="background:#4CAF50"></span>Rifleman</span>
+                    <span class="legend-item"><span class="swatch" style="background:#607D8B"></span>Tank</span>
+                    <span class="legend-item"><span class="swatch" style="background:#2196F3"></span>Aircraft</span>
+                    <span class="legend-item"><span class="swatch" style="background:#FF9800"></span>Cannon</span>
+                    <span class="legend-item"><span class="swatch" style="background:#795548"></span>Trench</span>
+                    <span class="legend-item"><span class="swatch" style="background:#FFEB3B"></span>Coward</span>
+                </div>
+
+                <div class="panel-section log-section">
+                    <h3>Combat Log</h3>
+                    <div class="log-container" id="logContainer">
+                        <div class="log-empty">No combat events yet...</div>
+                    </div>
+                </div>
+
+                <div class="panel-section history-section">
+                    <h3>Battle History</h3>
+                    <button id="btnHistory" class="btn-secondary">Load History</button>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+
+                <div class="panel-section back-link">
+                    <a href="index.html">&larr; Back to original 2D UI</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="threejs-app.js"></script>
+</body>
+</html>

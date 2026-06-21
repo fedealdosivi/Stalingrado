@@ -13,6 +13,7 @@ A turn-based battle simulation system modeling the Battle of Stalingrad between 
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Running the Application](#running-the-application)
+- [Web UI](#web-ui)
 - [Database Schema](#database-schema)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
@@ -183,8 +184,39 @@ java -jar target/stalingrado-battle-simulator-2.0.0-jar-with-dependencies.jar
 
 ### Option 3: From IDE
 
-Open the project in your IDE (IntelliJ IDEA, Eclipse, VS Code) and run:
+run:
 - Main class: `View.Main`
+
+## Web UI
+
+In addition to the console app, there's a Spring Boot web app (`Web.WebApplication`) that drives the same battle simulation over a WebSocket at `/ws/battle`. Run it with:
+
+```bash
+mvn spring-boot:run
+# or
+mvn clean package
+java -jar target/stalingrado-battle-simulator-2.0.0.jar
+```
+
+It listens on `http://localhost:8080` (override with the `PORT` env var).
+
+### 2D UI (existing, default)
+
+`src/main/resources/static/index.html` — the original Vue-based control panel and combat log, served at `/` or `/index.html`. Unchanged.
+
+### 3D POC (new)
+
+`src/main/resources/static/threejs.html` — a proof-of-concept battlefield rendered with [Three.js](https://threejs.org/) (loaded via CDN import map, no npm/bundler step), served at `/threejs.html`. It talks to the exact same `/ws/battle` WebSocket contract as the 2D UI, so no backend changes were needed.
+
+- AXIS units spawn on the left (red base rings), URSS on the right (cyan base rings); rifleman/tank/aircraft/cannon/trench/coward each get a distinct primitive shape and color matching the 2D UI's legend.
+- Combat events drive simple animations: the most recently added unit on each side advances to the center, clashes, and the loser fades out — mirroring the timing/logic already used by `app.js`.
+- Files: `threejs.html` (page), `threejs-app.js` (orchestration), `threejs-scene.js` (Three.js scene/units/animation), `threejs-ws.js` (WebSocket client), `threejs-controls.js` (DOM control panel), `threejs-style.css`.
+
+**Intentionally POC-only / out of scope:**
+- No camera-relative unit facing, terrain detail, or particle effects — just primitives and color.
+- Unit selection for a fight is positional (last-added per side), not tied to the specific soldier the backend actually resolved combat for — same simplification the 2D UI already makes.
+- No mobile/touch layout tuning (the 2D UI has it; this POC doesn't).
+- A pre-existing backend quirk (unrelated to this POC): `Ejercito`'s constructor checks `bando.equals("USSR")` but the web service constructs the army as `"URSS"`, so the Soviet attack/defense defaults never apply — both UIs show the same (AXIS) defaults for URSS. Not touched here since it's pre-existing behavior shared by both UIs.
 
 ## Database Schema
 
